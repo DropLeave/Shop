@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+
+	<!-- 连接池信息 -->
+	<!--引入jdbc.properties  -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+<!-- 	配置C3P0 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+		<property name="user" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean> 
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 管理连接池 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 配置Hibernate属性-->
+		 <property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<!--  加载映射-->
+ 	 <!-- <property name="mappingDirectoryLocations"> 
+			<list>
+				<value>classpath:user</value>
+				<value>classpath:category</value>
+				<value>classpath:product</value>
+				<value>classpath:categorysecond</value>
+				<value>classpath:order</value>
+			</list>
+		</property>   -->
+		<property name="mappingResources">
+			<list>
+				<value>user/User.hbm.xml</value>
+				<value>category/Category.hbm.xml</value>
+				<value>product/Product.hbm.xml</value>
+				<value>categorysecond/CategorySecond.hbm.xml</value>
+				<value>order/Order.hbm.xml</value>
+				<value>order/OrderItem.hbm.xml</value>
+				<value>adminuser/Admin.hbm.xml</value>
+			</list>
+		</property>
+	</bean> 
+	<!-- ============================配置Dao======================================================== -->
+	<bean id="userDao" class="user.UserDao"> 
+		<property name="sessionFactory" ref="sessionFactory"></property> 
+ 	</bean> 
+ 	<bean id="categoryDao" class="category.CategoryDao">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<bean id="productDao" class="product.ProductDao">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	<bean id="orderDao" class="order.OrderDao">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<bean id="adminUserDao" class="adminuser.AdminUserDao">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<bean id="categorySecondDao" class="categorysecond.CategorySecondDao">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	<!-- ============================配置Service======================================================-->
+	<bean id="userService" class="user.UserService">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	
+	<bean id="categoryService" class="category.CategoryService">
+		<property name="categoryDao" ref="categoryDao"></property>
+	</bean>
+	
+	<bean id="productService" class="product.ProductService">
+		<property name="productDao" ref="productDao"></property>
+	</bean>
+	
+	<bean id="orderService" class="order.OrderService">
+		<property name="orderDao" ref="orderDao"></property>
+	</bean>
+	
+	<bean id="adminUserService" class="adminuser.AdminUserService">
+		<property name="adminUserDao" ref="adminUserDao"></property>
+	</bean>
+	
+	<bean id="categorySecondService" class="categorysecond.CategorySecondService">
+		<property name="categorySecondDao" ref="categorySecondDao"></property>
+	</bean>
+	<!--============================ 配置action =================================================-->
+	<bean id="indexAction" class="index.IndexAction" scope="prototype">
+		<property name="categoryService" ref="categoryService"></property>
+		<property name="productService" ref="productService"></property>
+	</bean>
+	<bean id="userAction" class="user.UserAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="createcheckcode" class="user.CreateCheckCode" scope="prototype"></bean>
+	
+	<bean id="productAction" class="product.ProductAction" scope="prototype">
+		<property name="categoryService" ref="categoryService"></property>
+		<property name="productService" ref="productService"></property>
+		<property name="categorySecondService" ref="categorySecondService"></property>
+	</bean>
+	
+	<bean id="cartAction" class="cart.CartAction" scope="prototype">
+		<property name="productService" ref="productService"></property>
+	</bean>
+	
+	<bean id="orderAction" class="order.OrderAction" scope="prototype">
+		<property name="orderService" ref="orderService"></property>
+	</bean>
+	
+	<bean id="adminUserAction" class="adminuser.AdminUserAction" scope="prototype">
+		<property name="adminUserService" ref="adminUserService"></property>
+	</bean>
+	
+	<bean id="categoryAction" class="category.CategoryAction" scope="prototype">
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+	
+	<bean id="categorySecondAction" class="categorysecond.CategorySecondAction" scope="prototype">
+		<property name="categorySecondService" ref="categorySecondService"></property>
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+ 	<!-- 注册事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager"/> 
+</beans>

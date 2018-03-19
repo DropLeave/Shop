@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    <hibernate-mapping>
+    <!-- 配置主键 -->
+    	<class name="category.Category" table="category" >
+    		<id column="cid" name="cid">
+    			<generator class="native"></generator>
+    		</id>
+    		<!-- 配置普通属性 -->
+    		<property name="cname" column="cname" ></property>
+    		<property name="ishot" column="ishot" ></property>
+    		<property name="createtime" column="createtime" ></property>
+    		<property name="attribute1" column="attribute1" ></property>
+    		<property name="attribute2" column="attribute2" ></property>
+    		<property name="attribute3" column="attribute3" ></property>
+    		<property name="attribute4" column="attribute4" ></property>
+    		<!-- 配置关联关系 -->
+    		<set name="categorySeconds" lazy="false"  order-by="csid" cascade="delete">
+    			<key column="cid"/>
+    			<one-to-many class="categorysecond.CategorySecond" />
+    		</set>
+    		
+    	</class>
+    </hibernate-mapping>
+    

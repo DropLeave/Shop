@@ -1,0 +1,8 @@
+CREATE TABLE `categorysecond` (
+  `csid` int(11) NOT NULL AUTO_INCREMENT,
+  `csname` varchar(255) DEFAULT NULL,
+  `cid` int(11) DEFAULT NULL,
+  PRIMARY KEY (`csid`),
+  KEY `FK936FCAF21DB1FD15` (`cid`),
+  CONSTRAINT `FK936FCAF21DB1FD15` FOREIGN KEY (`cid`) REFERENCES `category` (`cid`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
